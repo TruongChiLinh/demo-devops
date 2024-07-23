@@ -14,9 +14,11 @@
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.24.8",
     "@babel/preset-react": "^7.24.7",
     "babel-jest": "^29.7.0",
+    "babel-preset-react-app": "^10.0.1",
     "jest": "^29.7.0"
   },
   "scripts": {
@@ -24,7 +26,6 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
-    
   },
   "eslintConfig": {
     "extends": [
