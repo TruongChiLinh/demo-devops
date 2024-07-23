@@ -3,7 +3,7 @@ name: FE CI/CD Pipeline
 on:
   push:
     branches:
-      - main
+      - master
 
 jobs:
   build:
@@ -19,7 +19,7 @@ jobs:
         id: build
         run: |
           TAG=$(echo $GITHUB_SHA | cut -c1-7)
-          docker build -t image-fe:${TAG} -f Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/image-fe:${TAG} -f Dockerfile.fe .
           echo "TAG=${TAG}" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
@@ -30,15 +30,6 @@ jobs:
 
       - name: Push FE Image to Docker Hub
         run: |
-          docker push jaytruong/image-fe:${{ env.TAG }}
-  # stage
-  # deploy:
-  #   runs-on: ubuntu-latest
-  #   needs: build
-  #   steps:
-  #     - name: Checkout FE Code
-  #       uses: actions/checkout@v3
+          docker push ${{ secrets.DOCKER_USERNAME }}/image-fe:${{ env.TAG }}
 
-  #     - name: Deploy FE to VPS1
-  #       run: |
-  #         ssh user@<VPS1_IP> "docker stack deploy -c /path/to/docker-compose-fe.yml fe_stack"
+  
