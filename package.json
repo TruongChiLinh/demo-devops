@@ -15,6 +15,7 @@
   "devDependencies": {
     "@babel/core": "^7.24.9",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@babel/plugin-transform-modules-commonjs": "^7.24.8",
     "@babel/preset-env": "^7.24.8",
     "@babel/preset-react": "^7.24.7",
     "babel-jest": "^29.7.0",
@@ -33,6 +34,12 @@
       "react-app/jest"
     ]
   },
+  "jest": {
+  "transform": {
+    "^.+\\.[t|j]sx?$": "babel-jest"
+  }
+},
+
   "browserslist": {
     "production": [
       ">0.2%",
