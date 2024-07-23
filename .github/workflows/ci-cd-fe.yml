@@ -19,7 +19,7 @@ jobs:
         id: build
         run: |
           TAG=$(echo $GITHUB_SHA | cut -c1-7)
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/image-fe:${TAG} -f Dockerfile.fe .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/image-fe:${TAG} -f Dockerfile .
           echo "TAG=${TAG}" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
