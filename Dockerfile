@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Xây dựng ứng dụng React
-RUN npm run build
+# RUN npm run build
 
 # Sử dụng hình ảnh nginx chính thức để phục vụ ứng dụng
 FROM nginx:alpine
