@@ -35,11 +35,10 @@
     ]
   },
   "jest": {
-  "transform": {
-    "^.+\\.[t|j]sx?$": "babel-jest"
-  }
-},
-
+    "transform": {
+      "^.+\\.[t|j]sx?$": "babel-jest"
+    }
+  },
   "browserslist": {
     "production": [
       ">0.2%",

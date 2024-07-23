@@ -4,7 +4,7 @@ module.exports = {
       '@babel/preset-react'
     ],
     plugins: [
-      '@babel/plugin-proposal-private-property-in-object'
+      '@babel/plugin-proposal-private-property-in-object',
        '@babel/plugin-transform-modules-commonjs'
     ]
   };
