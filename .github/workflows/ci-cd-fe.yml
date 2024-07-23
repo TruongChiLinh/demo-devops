@@ -31,7 +31,7 @@ jobs:
       - name: Push FE Image to Docker Hub
         run: |
           docker push image-fe:${{ env.TAG }}
-
+  # stage
   # deploy:
   #   runs-on: ubuntu-latest
   #   needs: build
