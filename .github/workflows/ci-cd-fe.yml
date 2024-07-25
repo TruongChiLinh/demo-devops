@@ -51,7 +51,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs:  test
+    needs: test
     steps:
       - name: Checkout FE Code
         uses: actions/checkout@v3
@@ -60,13 +60,9 @@ jobs:
         run: sudo apt-get install -y sshpass
 
       - name: Deploy to Server
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
         run: |
-            echo "$SSH_PASSWORD" | sshpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 $SSH_USER@$SERVER_IP << 'EOF'
-            echo "SSH Connection Successful!1"
+            echo "1234" | sshpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=60 vps1@192.168.254.115 << 'EOF'
+            echo "SSH Connection Successful!"
             EOF
 
 
