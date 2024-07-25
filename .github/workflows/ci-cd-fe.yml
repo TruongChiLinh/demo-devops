@@ -66,7 +66,7 @@ jobs:
           SERVER_IP: ${{ secrets.SERVER_IP }}
         run: |
             echo "$SSH_PASSWORD" | sshpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=30 $SSH_USER@$SERVER_IP << 'EOF'
-            echo "SSH Connection Successful!"
+            echo "SSH Connection Successful!1"
             EOF
 
 
