@@ -60,8 +60,12 @@ jobs:
         run: sudo apt-get install -y sshpass
 
       - name: Deploy to Server
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+          SERVER_IP: ${{ secrets.SERVER_IP }}
         run: |
-            echo "1234" | sshpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=60 vps1@192.168.254.115 << 'EOF'
+            echo "$SSH_PASSWORD" | sshpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=60 -v $SSH_USER@$SERVER_IP << 'EOF'
             echo "SSH Connection Successful!"
             EOF
 
