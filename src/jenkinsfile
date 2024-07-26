@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Code') {
             steps {
-              git branch: 'main', url: 'https://github.com/TruongChiLinh/demo-devops.git'
+              git branch: 'main', url: 'https://github.com/TruongChiLinh/demo-devops.git' //g
             }
         }
     //     stage('Test Docker') {
