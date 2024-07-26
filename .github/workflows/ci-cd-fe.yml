@@ -1,4 +1,4 @@
-name: FE CI/CD Pipeline
+name: FE CI
 
 on:
   push:
