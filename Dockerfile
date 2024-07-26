@@ -4,7 +4,7 @@ FROM node:18 AS build
 # Đặt thư mục làm việc
 WORKDIR /app
 
-# Sao chép package.json và package-lock.json vào thư mục làm việc
+# Sao chép package.json và package-lock.json vào thư mục làm việc //
 COPY package*.json ./
 
 # Cài đặt các dependencies
