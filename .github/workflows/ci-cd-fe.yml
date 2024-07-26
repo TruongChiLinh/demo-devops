@@ -49,7 +49,7 @@ jobs:
       - name: Run Tests
         run: npm test
 
-   deploy:
+  deploy:
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -76,7 +76,7 @@ jobs:
       - name: Run New Container
         run: |
           echo "Running new container..."
-          docker run -d --name frontend -p 80:80 ${{ secrets.DOCKER_USERNAME }}/image-fe:${{ env.TAG }}
+          docker run -d --name frontend -p 85:80 ${{ secrets.DOCKER_USERNAME }}/image-fe:${{ env.TAG }}
 
 
 
