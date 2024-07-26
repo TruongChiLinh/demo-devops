@@ -48,8 +48,7 @@ jobs:
 
       - name: Run Tests
         run: npm test
-
-  deploy:
+deploy:
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -60,14 +59,28 @@ jobs:
         run: sudo apt-get install -y sshpass
 
       - name: Deploy to Server
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
+        # env:
+        #   SSH_USER: ${{ secrets.SSH_USER }}
+        #   SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+        #   NGROK_ADDRESS: d15e-118-69-187-232.ngrok-free.app  # Ngrok address from the ngrok command output
+        #   NGROK_PORT: 22  # Ngrok port
+        #   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        #   TAG: ${{ env.TAG }}
         run: |
-            echo "$SSH_PASSWORD" | sshpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=60 -v $SSH_USER@$SERVER_IP << 'EOF'
-            echo "SSH Connection Successful!"
-            EOF
+            # echo "$SSH_PASSWORD" | sshpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=60 -v $SSH_USER@$NGROK_ADDRESS -p $NGROK_PORT << EOF
+            # echo "$SSH_PASSWORD" | sudo -S -i
+            cd /home/vps1/demo-devops
+            ls demo-devops
+            # # Pull the latest Docker image
+            # docker pull $DOCKER_USERNAME/image-fe:${TAG}
+
+            # # Stop and remove the old container (if exists)
+            # docker stop demo-devops || true
+            # docker rm demo-devops || true
+
+            # # Run the new container
+            # docker run -d --name demo-devops -p 80:80 $DOCKER_USERNAME/image-fe:${TAG}
+            # EOF
 
 
 
