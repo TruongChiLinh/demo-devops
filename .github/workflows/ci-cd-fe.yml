@@ -52,18 +52,23 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - name: Checkout FE Code
-        uses: actions/checkout@v3
-
       - name: Set up Docker
         run: |
-          echo "Setting up Docker environment..."
           docker --version
-          # docker-compose --version
+          docker-compose --version
 
-      - name: Deploy Stack to Docker Desktop
+      - name: Remove Old Stack
         run: |
-          echo "Deploying Docker stack to Docker Desktop..."
+          docker stack rm fe-app || true
+
+      - name: Deploy New Stack
+        run: |
+          docker stack deploy -c docker-compose-fe.yml fe-app
+
+      - name: Verify Deployment
+        run: |
+          docker stack services fe-app
+
       #     echo "version: '3.8'
       #     services:
       #       fe:
