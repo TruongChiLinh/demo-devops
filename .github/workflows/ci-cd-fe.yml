@@ -63,7 +63,7 @@ jobs:
 
       - name: Deploy New Stack
         run: |
-          docker stack deploy -c docker-compose-fe.yml fe-app
+          docker stack deploy -c docker-compose.yml fe-app
 
       - name: Verify Deployment
         run: |
