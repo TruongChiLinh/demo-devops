@@ -56,7 +56,9 @@ jobs:
         run: |
           docker --version
           docker-compose --version
-
+      - name: Pull Latest Image
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:${{ env.TAG }}
       - name: Remove Old Stack
         run: |
           docker stack rm fe-app || true
