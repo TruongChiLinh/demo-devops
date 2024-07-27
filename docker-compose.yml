@@ -1,0 +1,20 @@
+
+
+services:
+  fe:
+    image: ${DOCKER_USERNAME}/image-fe:${TAG}
+    ports:
+      - '85:80'
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+    networks:
+      - frontend
+      - backend
+
+networks:
+  frontend:
+    driver: overlay
+  backend:
+    driver: overlay
