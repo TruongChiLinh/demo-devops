@@ -55,18 +55,48 @@ jobs:
       - name: Checkout FE Code
         uses: actions/checkout@v3
 
-      - name: Install sshpass
-        run: sudo apt-get install -y sshpass
-
-      - name: Deploy to Server
-        env:
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-          SERVER_IP: ${{ secrets.SERVER_IP }}
+      - name: Set up Docker
         run: |
-            echo "$SSH_PASSWORD" | sshpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=60 -v $SSH_USER@$SERVER_IP << 'EOF'
-            echo "SSH Connection Successful!"
-            EOF
+          echo "Setting up Docker environment..."
+          docker --version
+          # docker-compose --version
+
+      - name: Deploy Stack to Docker Desktop
+        run: |
+          echo "Deploying Docker stack to Docker Desktop..."
+      #     echo "version: '3.8'
+      #     services:
+      #       fe:
+      #         image: ${{ secrets.DOCKER_USERNAME }}/image-fe:${{ env.TAG }}
+      #         ports:
+      #           - '80:80'
+      #     " > docker-compose.yml
+          
+      #     docker stack deploy -c docker-compose.yml fe_stack
+
+      # - name: Verify Deployment
+      #   run: |
+      #     echo "Verifying deployment..."
+      #     docker stack services fe_stack   
+  # deploy:
+  #   runs-on: ubuntu-latest
+  #   needs: test
+  #   steps:
+  #     - name: Checkout FE Code
+  #       uses: actions/checkout@v3
+
+  #     - name: Install sshpass
+  #       run: sudo apt-get install -y sshpass
+
+  #     - name: Deploy to Server
+  #       env:
+  #         SSH_USER: ${{ secrets.SSH_USER }}
+  #         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+  #         SERVER_IP: ${{ secrets.SERVER_IP }}
+  #       run: |
+  #           echo "$SSH_PASSWORD" | sshpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=60 -v $SSH_USER@$SERVER_IP << 'EOF'
+  #           echo "SSH Connection Successful!"
+  #           EOF
   
 # deploy:
 #     runs-on: ubuntu-latest
