@@ -32,11 +32,12 @@ jobs:
         run: |
           TAG=${{ env.TAG }}
           docker push ${{ secrets.DOCKER_USERNAME }}/image-fe:${TAG}
+
   test:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Checkout FE Code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
       - name: Set up Node.js
@@ -49,13 +50,11 @@ jobs:
 
       - name: Run Tests
         run: npm test
+
   deploy:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
       - name: Set up Docker
         run: |
           docker --version
@@ -64,6 +63,7 @@ jobs:
       - name: Pull Docker Image
         run: |
           TAG=${{ env.TAG }}
+          echo "Pulling image with tag: ${TAG}"
           docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:${TAG}
 
       - name: Create docker-compose.yml
@@ -103,5 +103,3 @@ jobs:
       - name: Verify Deployment
         run: |
           docker stack services fe-app
-
-    
