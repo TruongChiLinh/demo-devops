@@ -31,6 +31,7 @@ jobs:
       - name: Push Docker Image
         run: |
           TAG=${{ env.TAG }}
+          echo "Pushing image with tag: ${TAG}"
           docker push ${{ secrets.DOCKER_USERNAME }}/image-fe:${TAG}
 
   test:
@@ -63,6 +64,7 @@ jobs:
       - name: Pull Docker Image
         run: |
           TAG=${{ env.TAG }}
+          if [ -z "$TAG" ]; then TAG="latest"; fi
           echo "Pulling image with tag: ${TAG}"
           docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:${TAG}
 
