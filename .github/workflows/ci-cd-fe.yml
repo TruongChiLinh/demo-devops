@@ -55,19 +55,40 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    needs: test
+    needs: build
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
       - name: Set up Docker
         run: |
           docker --version
           docker-compose --version
 
-      - name: Pull Docker Image
+      - name: Create docker-compose.yml
         run: |
-          TAG=${{ env.TAG }}
-          if [ -z "$TAG" ]; then TAG="latest"; fi
-          echo "Pulling image with tag: $TAG"
-          docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:$TAG || true
+          echo "version: '3.8'
+          services:
+            fe:
+              image: ${DOCKER_USERNAME}/image-fe:${TAG}
+              ports:
+                - '85:80'
+              deploy:
+                replicas: 3
+                restart_policy:
+                  condition: on-failure
+                placement:
+                  constraints:
+                    - node.labels.role == worker
+              networks:
+                - frontend
+                - backend
+          networks:
+            frontend:
+              driver: overlay
+            backend:
+              driver: overlay
+          " > docker-compose.yml
 
       - name: Remove Old Stack
         run: |
