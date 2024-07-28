@@ -80,7 +80,7 @@ jobs:
           SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
           SERVER_IP: ${{ secrets.SERVER_IP }}
         run: |
-          echo "$SSH_PASSWORD" | sshpass ssh -o StrictHostKeyChecking=no -o ConnectTimeout=60 $SSH_USER@$SERVER_IP << 'EOF'
+          echo "$SSH_PASSWORD" | sshpass ssh -t -o StrictHostKeyChecking=no -o ConnectTimeout=60 $SSH_USER@$SERVER_IP << 'EOF'
           echo "SSH Connection Successful!"
           EOF
   # deploy:
