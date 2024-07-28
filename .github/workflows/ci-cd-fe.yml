@@ -73,7 +73,7 @@ on:
       - main
 
 jobs:
-  build-image:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -98,9 +98,9 @@ jobs:
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/image-fe:latest -f Dockerfile .
 
-  push-image:
+  push:
     runs-on: ubuntu-latest
-    needs: build-image
+    needs: build
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -116,10 +116,13 @@ jobs:
           echo "Pushing image with tag: latest"
           docker push ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
 
-  pull-image:
+  pull:
     runs-on: ubuntu-latest
-    needs: push-image
+    needs: push
     steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -133,7 +136,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    needs: push-image
+    needs: build
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
