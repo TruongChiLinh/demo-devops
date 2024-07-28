@@ -82,8 +82,8 @@ jobs:
             sudo -u vps1 -i << 'INNER_EOF'
               cd /home/vps1
               docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
-              docker-compose down
-              docker-compose up -d
+              # docker-compose down
+              # docker-compose up -d
             INNER_EOF
           EOF
 
