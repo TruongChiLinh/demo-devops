@@ -68,24 +68,25 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Deploy via SSH
-      uses: appleboy/ssh-action@v0.1.5
-      with:
-        host: ${{ secrets.SERVER_IP }}
-        username: ${{ secrets.SSH_USER }}
-        password: ${{ secrets.SSH_PASSWORD }}
-        script: |
-          echo "${{ secrets.SSH_PASSWORD }}" | sudo -S -i << 'EOF'
-            sudo -u vps1 -i << 'INNER_EOF'
-              cd /home/vps1
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SSH_USER }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
+          script: |
+            echo "${{ secrets.SSH_PASSWORD }}" | sudo -S -i
+            sudo -u vps1 -i <<EOF
+              cd /home/vps1/demo-devops
               docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
               # docker-compose down
               # docker-compose up -d
-            INNER_EOF
-          EOF
+            EOF
+
 
   # deploy:
   #   runs-on: ubuntu-latest
