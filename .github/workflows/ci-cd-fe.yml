@@ -74,11 +74,11 @@ jobs:
     - name: Deploy via SSH
       uses: appleboy/ssh-action@v0.1.5
       with:
-        host: ${{ secrets.SSH_HOST }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        host: ${{ secrets.SERVER_IP }}
+        username: ${{ secrets.SSH_USER }}
+        password: ${{ secrets.SSH_PASSWORD }}
         script: |
-          echo "${{ secrets.ROOT_PASSWORD }}" | sudo -S -i << 'EOF'
+          echo "${{ secrets.SSH_PASSWORD }}" | sudo -S -i << 'EOF'
             sudo -u vps1 -i << 'INNER_EOF'
               cd /home/vps1
               docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
