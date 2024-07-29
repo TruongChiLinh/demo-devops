@@ -185,7 +185,7 @@ jobs:
           subject: '${{ job.status }}: Docker Image Push'
           body: 'The Docker image push step has ${{ job.status }}.'
           to: recipient_email@example.com
-          from: ${{ secrets.EMAIL_USERNAME }}
+          from: $linhbeo5427@gmail.com
 
   pull_image:
     runs-on: ubuntu-latest
@@ -213,7 +213,7 @@ jobs:
           subject: '${{ job.status }}: Docker Image Pull'
           body: 'The Docker image pull step has ${{ job.status }}.'
           to: recipient_email@example.com
-          from: ${{ secrets.EMAIL_USERNAME }}
+          from: linhbeo5427@gmail.com
 
   test:
     runs-on: ubuntu-latest
