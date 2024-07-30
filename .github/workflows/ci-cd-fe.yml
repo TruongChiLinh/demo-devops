@@ -96,6 +96,7 @@ jobs:
         run: npm test
 
 
+  
   deploy:
     runs-on: ubuntu-latest
     needs: test
@@ -112,9 +113,9 @@ jobs:
       - name: Remove Old Stack
         run: |
           echo "Removing old stack"
-          docker stack rm fe-app || true
+          docker-compose -f ./docker-compose.yml down --remove-orphans || true
           # Wait for the stack to be completely removed
-          while docker stack ls | grep -q fe-app; do
+          while docker-compose -f ./docker-compose.yml ps | grep -q fe-app; do
             echo "Waiting for old stack to be removed..."
             sleep 5
           done
@@ -124,11 +125,10 @@ jobs:
           echo "Deploying new stack"
           docker-compose -f ./docker-compose.yml up -d
 
-
       - name: Check Application Status
         run: |
           sleep 10  # Wait for the stack to deploy
-          if docker service ls | grep -q fe-app_frontend; then
+          if docker-compose -f ./docker-compose.yml ps | grep -q fe-app_frontend; then
             echo "The stack has been deployed successfully."
             exit 0
           else
