@@ -122,6 +122,11 @@ jobs:
           echo "Deploying new stack"
           docker stack deploy -c ./docker-compose.yml fe-app  # Đảm bảo đường dẫn đúng
 
+      - name: Join Swarm (If Not Already Joined)
+        run: |
+          echo "Joining Docker Swarm"
+          docker swarm join --token ${{ secrets.DOCKER_SWARM_JOIN_TOKEN }} ${{ secrets.DOCKER_SWARM_MANAGER_IP }}:2377 || true
+
       - name: Check Application Status
         run: |
           sleep 10  # Wait for the stack to deploy
