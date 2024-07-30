@@ -124,7 +124,7 @@ jobs:
       - name: Check Application Status
         run: |
           sleep 10  # Wait for the application to start
-          if curl -s http://localhost:87 | grep -q "Expected content"; then
+          if curl -s http://localhost:3000 | grep -q "Expected content"; then
             echo "The application is running successfully."
             exit 0
           else
