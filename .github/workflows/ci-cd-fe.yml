@@ -94,9 +94,22 @@ jobs:
 
       - name: Run Tests
         run: npm test
-  deploy:
+  manage_swarm:
     runs-on: ubuntu-latest
     needs: test
+    steps:
+      - name: Retrieve Worker Join Token
+        run: |
+          TOKEN=$(docker swarm join-token worker -q)
+          echo "WORKER_JOIN_TOKEN=$TOKEN" >> $GITHUB_ENV
+
+      - name: Join Node to Swarm
+        run: |
+          docker swarm join --token ${{ env.WORKER_JOIN_TOKEN }} ${{ secrets.MANAGER_IP }}:2377
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: manage_swarm
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -145,16 +158,3 @@ jobs:
           body: 'The deployment step has ${{ job.status }}. The application is running.'
           to: linhbeo5427@gmail.com
           from: sys@gmail.com
-
-  manage_swarm:
-    runs-on: ubuntu-latest
-    needs: deploy
-    steps:
-      - name: Retrieve Worker Join Token
-        run: |
-          TOKEN=$(docker swarm join-token worker -q)
-          echo "WORKER_JOIN_TOKEN=$TOKEN" >> $GITHUB_ENV
-
-      - name: Join Node to Swarm
-        run: |
-          docker swarm join --token ${{ env.WORKER_JOIN_TOKEN }} ${{ secrets.DOCKER_SWARM_MANAGER_IP }}:2377
