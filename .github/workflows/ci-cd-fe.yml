@@ -94,22 +94,11 @@ jobs:
 
       - name: Run Tests
         run: npm test
-  manage_swarm:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
-      - name: Retrieve Worker Join Token
-        run: |
-          TOKEN=$(docker swarm join-token worker -q)
-          echo "WORKER_JOIN_TOKEN=$TOKEN" >> $GITHUB_ENV
 
-      - name: Join Node to Swarm
-        run: |
-          docker swarm join --token ${{ env.WORKER_JOIN_TOKEN }} ${{ secrets.MANAGER_IP }}:2377
 
   deploy:
     runs-on: ubuntu-latest
-    needs: manage_swarm
+    needs: test
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
@@ -130,10 +119,11 @@ jobs:
             sleep 5
           done
 
-      - name: Deploy Docker Stack
+      - name: Deploy Docker Compose
         run: |
           echo "Deploying new stack"
-          docker stack deploy -c ./docker-compose.yml fe-app
+          docker-compose -f ./docker-compose.yml up -d
+
 
       - name: Check Application Status
         run: |
