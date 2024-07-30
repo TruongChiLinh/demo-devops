@@ -109,7 +109,7 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
           docker stop fe-app || true
           docker rm fe-app || true
-          docker run -d --rm --name fe-app -p 87:80 ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
+          # docker run -d --rm --name fe-app -p 87:80 ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
 
       - name: Check Application Status
         run: |
@@ -131,6 +131,6 @@ jobs:
           username: ${{ secrets.EMAIL_USER }}
           password: ${{ secrets.EMAIL_PASS }}
           subject: '${{ job.status }}: Deployment Status'
-          body: 'The deployment step has ${{ job.status }}. The application is running at http://localhost:80.'
+          body: 'The deployment step has ${{ job.status }}. The application is running at http://localhost:87.'
           to: linhbeo5427@gmail.com
           from: sys@gmail.com
