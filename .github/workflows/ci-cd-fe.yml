@@ -96,7 +96,7 @@ jobs:
         run: npm test
   deploy:
     runs-on: ubuntu-latest
-    needs: build_and_push_image
+    needs: test
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
