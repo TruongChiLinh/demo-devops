@@ -1,143 +1,5 @@
-# name: CI/CD Pipeline
 
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   build:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v3
-
-#       - name: Set up Docker Buildx
-#         uses: docker/setup-buildx-action@v2
-
-#       - name: Login to Docker Hub
-#         uses: docker/login-action@v2
-#         with:
-#           username: ${{ secrets.DOCKER_USERNAME }}
-#           password: ${{ secrets.DOCKER_PASSWORD }}
-
-#       - name: Remove Old Image with Tag latest
-#         run: |
-#           echo "Removing old image with tag: latest"
-#           docker rmi ${{ secrets.DOCKER_USERNAME }}/image-fe:latest || true
-
-#       - name: Build Docker Image
-#         id: build
-#         run: |
-#           # TAG=${{ github.sha }}
-#           # echo "TAG=${TAG}" >> $GITHUB_ENV
-          
-#           # Build image với tag từ commit hash
-#           # docker build -t ${{ secrets.DOCKER_USERNAME }}/image-fe:${TAG} -f Dockerfile .
-          
-#           # Build image với tag latest
-#           docker build -t ${{ secrets.DOCKER_USERNAME }}/image-fe:latest -f Dockerfile .
-
-#       - name: Push Docker Image
-#         run: |
-#           # TAG=${{ env.TAG }}
-#           # echo "Pushing image with tag: ${TAG}"
-#           # docker push ${{ secrets.DOCKER_USERNAME }}/image-fe:${TAG}
-          
-#           echo "Pushing image with tag: latest"
-#           docker push ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
-
-#   test:
-#     runs-on: ubuntu-latest
-#     needs: build
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v3
-
-#       - name: Set up Node.js
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: '18'
-
-#       - name: Install Dependencies
-#         run: npm install
-
-#       - name: Run Tests
-#         run: npm test
- 
-# name: CI/CD Pipeline
-
-# on:
-#   push:
-#     branches:
-#       - main
-
-# jobs:
-#   build_and_push:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v3
-
-#       - name: Set up Docker Buildx
-#         uses: docker/setup-buildx-action@v2
-
-#       - name: Login to Docker Hub
-#         uses: docker/login-action@v2
-#         with:
-#           username: ${{ secrets.DOCKER_USERNAME }}
-#           password: ${{ secrets.DOCKER_PASSWORD }}
-
-#       - name: Remove Old Image with Tag latest
-#         run: |
-#           echo "Removing old image with tag: latest"
-#           docker rmi ${{ secrets.DOCKER_USERNAME }}/image-fe:latest || true
-
-#       - name: Build Docker Image
-#         id: build
-#         run: |
-#           docker build -t ${{ secrets.DOCKER_USERNAME }}/image-fe:latest -f Dockerfile .
-
-#       - name: Push Docker Image
-#         run: |
-#           echo "Pushing image with tag: latest"
-#           docker push ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
- 
-#   pull_image:
-#     runs-on: ubuntu-latest
-#     needs: build_and_push
-#     steps:
-#       - name: Login to Docker Hub
-#         uses: docker/login-action@v2
-#         with:
-#           username: ${{ secrets.DOCKER_USERNAME }}
-#           password: ${{ secrets.DOCKER_PASSWORD }}
-
-#       - name: Pull Docker Image
-#         run: |
-#           echo "Pulling image with tag: latest"
-#           docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
-
-#   test:
-#     runs-on: ubuntu-latest
-#     needs: pull_image
-#     steps:
-#       - name: Checkout Code
-#         uses: actions/checkout@v3
-
-#       - name: Set up Node.js
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: '18'
-
-#       - name: Install Dependencies
-#         run: npm install
-
-#       - name: Run Tests
-#         run: npm test
-
-
-name: CI/CD Pipeline
+name: CI FE-APP
 
 on:
   push:
@@ -145,7 +7,7 @@ on:
       - main
 
 jobs:
-  build_and_push:
+  build_and_push_image:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -180,16 +42,16 @@ jobs:
         with:
           server_address: smtp.gmail.com
           server_port: 587
-          username: linhbeo5427@gmail.com
+          username: ${{ secrets.EMAIL_USER }}
           password: ${{ secrets.EMAIL_PASS }}
           subject: '${{ job.status }}: Docker Image Push'
           body: 'The Docker image push step has ${{ job.status }}.'
-          to: recipient_email@example.com
-          from: $linhbeo5427@gmail.com
+          to: linhbeo5427@gmail.com
+          from: sys@gmail.com
 
   pull_image:
     runs-on: ubuntu-latest
-    needs: build_and_push
+    needs: build_and_push_image
     steps:
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -208,12 +70,12 @@ jobs:
         with:
           server_address: smtp.gmail.com
           server_port: 587
-          username: linhbeo5427@gmail.com
+          username: ${{ secrets.EMAIL_USER }}
           password: ${{ secrets.EMAIL_PASS }}
           subject: '${{ job.status }}: Docker Image Pull'
           body: 'The Docker image pull step has ${{ job.status }}.'
-          to: recipient_email@example.com
-          from: linhbeo5427@gmail.com
+          to: linhbeo5427@gmail.com
+          from: sys@gmail.com
 
   test:
     runs-on: ubuntu-latest
@@ -232,3 +94,43 @@ jobs:
 
       - name: Run Tests
         run: npm test
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Pull and Run Docker Image
+        run: |
+          docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
+          docker stop fe-app || true
+          docker rm fe-app || true
+          docker run -d --rm --name fe-app -p 87:80 ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
+
+      - name: Check Application Status
+        run: |
+          sleep 10  # Wait for the container to start
+          if docker ps | grep -q fe-app; then
+            echo "The application is running successfully."
+            exit 0
+          else
+            echo "The application failed to start."
+            exit 1
+          fi
+
+      - name: Send Email Notification
+        if: success() || failure()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USER }}
+          password: ${{ secrets.EMAIL_PASS }}
+          subject: '${{ job.status }}: Deployment Status'
+          body: 'The deployment step has ${{ job.status }}. The application is running at http://localhost:87.'
+          to: linhbeo5427@gmail.com
+          from: sys@gmail.com
