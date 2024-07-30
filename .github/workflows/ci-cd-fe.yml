@@ -101,30 +101,34 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          node-version: '18'
 
-      - name: Remove Old Containers
-        run: |
-          echo "Removing old containers"
-          docker-compose -f ./docker-compose.yml down || true
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Deploy Docker Compose
+      - name: Stop Existing Application
         run: |
-          echo "Deploying new stack"
-          docker-compose -f ./docker-compose.yml up -d
+          echo "Stopping existing application"
+          pkill -f "npm start" || true
+
+      - name: Start Application
+        run: |
+          echo "Starting the application"
+          npm start &
+          # Wait for the application to start
+          sleep 10
 
       - name: Check Application Status
         run: |
-          sleep 10  # Wait for the stack to deploy
-          if docker ps | grep -q fe-app_frontend; then
-            echo "The stack has been deployed successfully."
+          sleep 10  # Wait for the application to start
+          if curl -s http://localhost:87 | grep -q "Expected content"; then
+            echo "The application is running successfully."
             exit 0
           else
-            echo "The stack deployment failed."
+            echo "The application failed to start."
             exit 1
           fi
 
