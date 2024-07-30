@@ -109,8 +109,8 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
           docker stop fe-app || true
           docker rm fe-app || true
-          # docker run -d --name fe-app -p 86:80 ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
-          docker run -d --rm --name fe-app -p 86:80 ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
+           docker run -d --name fe-app -p 86:80 ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
+          # docker run -d --rm --name fe-app -p 86:80 ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
 
       - name: Send Email Notification
         if: always()
