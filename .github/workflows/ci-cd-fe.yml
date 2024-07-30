@@ -120,12 +120,7 @@ jobs:
       - name: Deploy Docker Stack
         run: |
           echo "Deploying new stack"
-          docker stack deploy -c ./docker-compose.yml fe-app  # Đảm bảo đường dẫn đúng
-
-      - name: Join Swarm (If Not Already Joined)
-        run: |
-          echo "Joining Docker Swarm"
-          docker swarm join --token ${{ secrets.DOCKER_SWARM_JOIN_TOKEN }} ${{ secrets.DOCKER_SWARM_MANAGER_IP }}:2377 || true
+          docker stack deploy -c ./docker-compose.yml fe-app
 
       - name: Check Application Status
         run: |
@@ -150,3 +145,16 @@ jobs:
           body: 'The deployment step has ${{ job.status }}. The application is running.'
           to: linhbeo5427@gmail.com
           from: sys@gmail.com
+
+  manage_swarm:
+    runs-on: ubuntu-latest
+    needs: deploy
+    steps:
+      - name: Retrieve Worker Join Token
+        run: |
+          TOKEN=$(docker swarm join-token worker -q)
+          echo "WORKER_JOIN_TOKEN=$TOKEN" >> $GITHUB_ENV
+
+      - name: Join Node to Swarm
+        run: |
+          docker swarm join --token ${{ env.WORKER_JOIN_TOKEN }} ${{ secrets.DOCKER_SWARM_MANAGER_IP }}:2377
