@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  frontend:
+    image: ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
+    networks:
+      - fe
+      - be
+    ports:
+      - "87:80"
+    environment:
+      - BACKEND_URL=http://backend:8080  # Kết nối đến backend qua mạng be
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+      restart_policy:
+        condition: on-failure
+
+networks:
+  fe:
+    driver: overlay  # Hoặc bridge nếu không sử dụng Swarm
+  be:
+    external: true  # Kết nối đến mạng 'be' đã được tạo từ dịch vụ backend
