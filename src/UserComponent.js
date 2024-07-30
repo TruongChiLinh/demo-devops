@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-// Component để thêm hoặc chỉnh sửa người dùng
+// code flow
 const UserForm = ({ user, onSave, onCancel }) => {
   const [name, setName] = useState(user ? user.name : '');
   const [email, setEmail] = useState(user ? user.email : '');
