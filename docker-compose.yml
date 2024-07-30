@@ -7,12 +7,15 @@ services:
       - "80:80"
     deploy:
       replicas: 2
+      placement:
+        constraints:
+          - node.role == worker
     networks:
       - fe
-      - be  # Kết nối đến mạng be để giao tiếp với backend
+      - be
 
 networks:
   fe:
     driver: overlay
   be:
-    external: true  # Mạng be đã được tạo trước đó
+    external: true
