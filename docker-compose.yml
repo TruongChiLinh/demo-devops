@@ -4,12 +4,12 @@ services:
   frontend:
     image: "${DOCKER_USERNAME}/image-fe:latest"
     ports:
-      - "80:80"
+      - "87:80"
     deploy:
       replicas: 2
       placement:
         constraints:
-          - node.role == worker
+          - node.role == manager
     networks:
       - fe
       - be
