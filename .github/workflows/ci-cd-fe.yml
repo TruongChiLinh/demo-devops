@@ -180,12 +180,12 @@ jobs:
         with:
           server_address: smtp.gmail.com
           server_port: 587
-          username: APP-FE
+          username: 'linhbeo5427@gmail.com'
           password: ${{ secrets.EMAIL_PASS }}
           subject: '${{ job.status }}: Docker Image Push'
           body: 'The Docker image push step has ${{ job.status }}.'
           to: linhbeo5427@gmail.com
-          from: recipient_email@example.com
+          from: ''
 
   pull_image:
     runs-on: ubuntu-latest
@@ -208,12 +208,12 @@ jobs:
         with:
           server_address: smtp.gmail.com
           server_port: 587
-          username: FE-APP
+          username: 'linhbeo5427@gmail.com'
           password: ${{ secrets.EMAIL_PASS }}
           subject: '${{ job.status }}: Docker Image Pull'
           body: 'The Docker image pull step has ${{ job.status }}.'
           to: linhbeo5427@gmail.com
-          from: recipient_email@example.com
+          from: ''
 
   test:
     runs-on: ubuntu-latest
