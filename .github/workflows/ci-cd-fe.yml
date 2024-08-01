@@ -136,7 +136,7 @@ jobs:
       - name: Remove Old Docker Compose
         run: |
           echo "Removing old Docker Compose "
-          docker-compose -f docker-compose.yml down || true
+          docker-compose -f ./docker-compose.yml down || true
 
       # - name: Remove ngrok
       #   run: |
@@ -146,7 +146,7 @@ jobs:
       - name: Deploy Docker Compose
         run: |
           echo "Deploying Docker Compose"
-          docker-compose -f docker-compose.yml up -d
+          docker-compose -f ./docker-compose.yml up -d
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
