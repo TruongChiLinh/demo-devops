@@ -119,24 +119,23 @@ jobs:
           sleep 10
           curl -s http://localhost:4040/api/tunnels | jq .tunnels[0].public_url
 
-      - name: Remove Old Docker Stack if Exists
+      - name: Remove Old Docker Compose 
         run: |
-          echo "Removing old Docker stack if exists"
-          docker stack rm fe-stack || true
-          sleep 10  # Wait a bit to ensure the stack removal is completed
-
-      - name: Deploy Docker Compose Stack
+          echo "Removing old Docker Compose"
+          docker-compose down || true
+      - name: Remove ngrok
         run: |
-          echo "Deploying Docker Compose stack"
-          echo "version: '3.8'
-          
+          echo "Removing old ngrok installation"
+          sudo rm /usr/local/bin/ngrok || true
+      - name: Deploy Docker Compose 
+        run: |
+          echo "Deploying Docker Compose "
+        
           services:
             frontend:
               image: \"${{ secrets.DOCKER_USERNAME }}/image-fe:latest\"
               ports:
                 - \"87:80\"
-              deploy:
-                replicas: 2
               networks:
                 - fe
                 - be
