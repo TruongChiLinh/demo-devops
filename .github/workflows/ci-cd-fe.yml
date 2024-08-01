@@ -102,29 +102,22 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Install Docker and Docker Compose
+      - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y docker-compose
+          sudo apt-get install -y unzip
 
-      - name: Install Ngrok
+      - name: Download and Extract ngrok
         run: |
-          curl -s https://ngrok.com/download | tar xz
-          sudo mv ngrok /usr/local/bin/
+          curl -LO https://bin.equinox.io/c/4v4Z6x1PoL8/ngrok-stable-linux-amd64.zip
+          unzip ngrok-stable-linux-amd64.zip
+          sudo mv ngrok /usr/local/bin/ngrok
 
-      - name: Set up Docker Compose
-        uses: docker/setup-buildx-action@v2
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-
-      - name: Pull Docker Image
+      - name: Set up ngrok
         run: |
-          echo "Pulling image with tag: latest"
-          docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
+          ngrok http 87 > /dev/null &
+          sleep 10
+          curl -s http://localhost:4040/api/tunnels | jq .tunnels[0].public_url
 
       - name: Remove Old Docker Stack if Exists
         run: |
@@ -156,19 +149,6 @@ jobs:
           
           docker-compose up -d
 
-      - name: Start Ngrok
-        run: |
-          echo "Starting ngrok to expose Docker services"
-          ngrok http 87 &
-
-      - name: Wait for Ngrok to Start
-        run: |
-          sleep 10
-
-      - name: Check Ngrok Status
-        run: |
-          curl -s http://localhost:4040/api/tunnels
-
       - name: Send Email Notification
         if: success() || failure()
         uses: dawidd6/action-send-mail@v3
@@ -178,6 +158,6 @@ jobs:
           username: ${{ secrets.EMAIL_USER }}
           password: ${{ secrets.EMAIL_PASS }}
           subject: '${{ job.status }}: Deployment Status'
-          body: 'The deployment step has ${{ job.status }}. Ngrok URL: http://localhost:4040/api/tunnels'
+          body: 'The deployment step has ${{ job.status }}.'
           to: linhbeo5427@gmail.com
           from: sys@gmail.com
