@@ -94,7 +94,7 @@ jobs:
 
       - name: Run Tests
         run: npm test
-
+# test deploy
   deploy:
       runs-on: ubuntu-latest
       needs: test
@@ -138,10 +138,10 @@ jobs:
           echo "Removing old Docker Compose "
           docker-compose -f ./docker-compose.yml down || true
 
-      # - name: Remove ngrok
-      #   run: |
-      #     echo "Removing old ngrok installation"
-      #     sudo rm /usr/local/bin/ngrok || true
+      - name: Remove ngrok
+        run: |
+          echo "Removing old ngrok installation"
+          sudo rm /usr/local/bin/ngrok || true
 
       - name: Deploy Docker Compose
         run: |
