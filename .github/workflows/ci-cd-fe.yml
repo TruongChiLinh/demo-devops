@@ -138,6 +138,8 @@ jobs:
         run: |
           echo "Deploying Docker Compose"
           docker-compose -f docker-compose.yml up -d
+        env:
+         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
       - name: Send Email Notification
         if: success() || failure()
