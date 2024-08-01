@@ -1,4 +1,3 @@
-
 name: CI FE-APP
 
 on:
@@ -95,17 +94,23 @@ jobs:
 
       - name: Run Tests
         run: npm test
+
   deploy:
     runs-on: ubuntu-latest
-    needs: build_and_push_image
+    needs: test
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Update and Install Dependencies
+      - name: Install Docker and Docker Compose
         run: |
           sudo apt-get update
           sudo apt-get install -y docker-compose
+
+      - name: Install Ngrok
+        run: |
+          curl -s https://ngrok.com/download | tar xz
+          sudo mv ngrok /usr/local/bin/
 
       - name: Set up Docker Compose
         uses: docker/setup-buildx-action@v2
@@ -120,11 +125,13 @@ jobs:
         run: |
           echo "Pulling image with tag: latest"
           docker pull ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
+
       - name: Remove Old Docker Stack if Exists
         run: |
           echo "Removing old Docker stack if exists"
           docker stack rm fe-stack || true
           sleep 10  # Wait a bit to ensure the stack removal is completed
+
       - name: Deploy Docker Compose Stack
         run: |
           echo "Deploying Docker Compose stack"
@@ -137,9 +144,6 @@ jobs:
                 - \"87:80\"
               deploy:
                 replicas: 2
-                placement:
-                  constraints:
-                    - node.role == worker
               networks:
                 - fe
                 - be
@@ -150,7 +154,20 @@ jobs:
             be:
               external: true" > docker-compose.yml
           
-          docker stack deploy -c docker-compose.yml fe-stack
+          docker-compose up -d
+
+      - name: Start Ngrok
+        run: |
+          echo "Starting ngrok to expose Docker services"
+          ngrok http 87 &
+
+      - name: Wait for Ngrok to Start
+        run: |
+          sleep 10
+
+      - name: Check Ngrok Status
+        run: |
+          curl -s http://localhost:4040/api/tunnels
 
       - name: Send Email Notification
         if: success() || failure()
@@ -161,6 +178,6 @@ jobs:
           username: ${{ secrets.EMAIL_USER }}
           password: ${{ secrets.EMAIL_PASS }}
           subject: '${{ job.status }}: Deployment Status'
-          body: 'The deployment step has ${{ job.status }}.'
+          body: 'The deployment step has ${{ job.status }}. Ngrok URL: http://localhost:4040/api/tunnels'
           to: linhbeo5427@gmail.com
           from: sys@gmail.com

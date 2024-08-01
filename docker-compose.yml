@@ -7,9 +7,6 @@ services:
       - "87:80"
     deploy:
       replicas: 2
-      placement:
-        constraints:
-          - node.role == worker
     networks:
       - fe
       - be
