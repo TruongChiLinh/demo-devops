@@ -13,4 +13,4 @@ networks:
   fe:
     driver: bridge
   be:
-    external: true
+    driver: bridge
