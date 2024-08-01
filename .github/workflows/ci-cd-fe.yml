@@ -105,49 +105,39 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y unzip
+          sudo apt-get install -y unzip jq
 
       - name: Download and Extract ngrok
         run: |
           curl -LO https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
-          sudo tar -xvzf ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
+          tar -xvzf ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
           sudo chmod +x /usr/local/bin/ngrok
 
-      - name: Set up ngrok
+      - name: Start ngrok
         run: |
-          ngrok http 87 > /dev/null &
-          sleep 10
-          curl -s http://localhost:4040/api/tunnels | jq .tunnels[0].public_url
+          nohup ngrok http 87 > /tmp/ngrok.log 2>&1 &
+          sleep 10  # Wait for ngrok to start
 
-      - name: Remove Old Docker Stack if Exists
+      - name: Get ngrok URL
+        id: get_ngrok_url
         run: |
-          echo "Removing old Docker stack if exists"
-          docker stack rm fe-stack || true
-          sleep 10  # Wait a bit to ensure the stack removal is completed
+          url=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
+          echo "ngrok_url=$url" >> $GITHUB_ENV
 
-      - name: Deploy Docker Compose Stack
+      - name: Remove Old Docker Compose 
         run: |
-          echo "Deploying Docker Compose stack"
-          echo "version: '3.8'
-          
-          services:
-            frontend:
-              image: \"${{ secrets.DOCKER_USERNAME }}/image-fe:latest\"
-              ports:
-                - \"87:80\"
-              deploy:
-                replicas: 2
-              networks:
-                - fe
-                - be
+          echo "Removing old Docker Compose stack"
+          docker-compose -f deploy/docker-compose.yml down || true
 
-          networks:
-            fe:
-              driver: overlay
-            be:
-              external: true" > docker-compose.yml
-          
-          docker-compose up -d
+      - name: Remove ngrok
+        run: |
+          echo "Removing old ngrok installation"
+          sudo rm /usr/local/bin/ngrok || true
+
+      - name: Deploy Docker Compose 
+        run: |
+          echo "Deploying Docker Compose"
+          docker-compose -f docker-compose.yml up -d
 
       - name: Send Email Notification
         if: success() || failure()
@@ -158,6 +148,6 @@ jobs:
           username: ${{ secrets.EMAIL_USER }}
           password: ${{ secrets.EMAIL_PASS }}
           subject: '${{ job.status }}: Deployment Status'
-          body: 'The deployment step has ${{ job.status }}.'
+          body: 'The deployment step has ${{ job.status }}. ngrok URL: ${{ env.ngrok_url }}'
           to: linhbeo5427@gmail.com
           from: sys@gmail.com

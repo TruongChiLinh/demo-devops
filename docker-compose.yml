@@ -1,18 +1,16 @@
-version: '3.8'
+
 
 services:
   frontend:
     image: "${DOCKER_USERNAME}/image-fe:latest"
     ports:
       - "87:80"
-    deploy:
-      replicas: 2
     networks:
       - fe
       - be
 
 networks:
   fe:
-    driver: overlay
+    driver: bridge
   be:
     external: true
