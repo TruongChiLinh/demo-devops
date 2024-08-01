@@ -96,9 +96,9 @@ jobs:
         run: npm test
 
   deploy:
-    runs-on: ubuntu-latest
-    needs: test
-    steps:
+      runs-on: ubuntu-latest
+      needs: test
+      steps:
       - name: Checkout Code
         uses: actions/checkout@v3
 
@@ -110,7 +110,7 @@ jobs:
       - name: Download and Extract ngrok
         run: |
           curl -LO https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
-          tar -xvzf ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
+          sudo tar -xvzf ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
           sudo chmod +x /usr/local/bin/ngrok
 
       - name: Start ngrok
@@ -118,17 +118,24 @@ jobs:
           nohup ngrok http 87 > /tmp/ngrok.log 2>&1 &
           sleep 10  # Wait for ngrok to start
 
+      - name: Print ngrok Log
+        run: |
+          cat /tmp/ngrok.log
+
       - name: Get ngrok URL
         id: get_ngrok_url
         run: |
           url=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
           echo "ngrok_url=$url" >> $GITHUB_ENV
+          echo "ngrok URL: $url"  # Print the URL for debugging
+
       - name: Print ngrok URL
         run: |
-           echo "ngrok URL: ${{ env.ngrok_url }}"
-      - name: Remove Old Docker Compose 
+          echo "ngrok URL: ${{ env.ngrok_url }}"
+
+      - name: Remove Old Docker Compose
         run: |
-          echo "Removing old Docker Compose stack"
+          echo "Removing old Docker Compose "
           docker-compose -f docker-compose.yml down || true
 
       - name: Remove ngrok
@@ -136,12 +143,12 @@ jobs:
           echo "Removing old ngrok installation"
           sudo rm /usr/local/bin/ngrok || true
 
-      - name: Deploy Docker Compose 
+      - name: Deploy Docker Compose
         run: |
           echo "Deploying Docker Compose"
           docker-compose -f docker-compose.yml up -d
         env:
-         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 
       - name: Send Email Notification
         if: success() || failure()
