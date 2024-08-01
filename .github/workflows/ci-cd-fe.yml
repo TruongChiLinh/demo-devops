@@ -123,7 +123,9 @@ jobs:
         run: |
           url=$(curl -s http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
           echo "ngrok_url=$url" >> $GITHUB_ENV
-
+      - name: Print ngrok URL
+        run: |
+           echo "ngrok URL: ${{ env.ngrok_url }}"
       - name: Remove Old Docker Compose 
         run: |
           echo "Removing old Docker Compose stack"
