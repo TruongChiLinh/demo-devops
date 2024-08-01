@@ -124,11 +124,6 @@ jobs:
         echo "Starting new container"
         docker run -d -p 82:80 --name fe-app ${{ secrets.DOCKER_USERNAME }}/image-fe:latest
 
-    - name: List Docker Containers
-      run: |
-        echo "Listing all containers"
-        docker ps -a
-
     - name: Check Application Status
       run: |
         echo "Checking application status"
@@ -143,6 +138,11 @@ jobs:
         done
         echo "The application failed to start."
         exit 1
+
+    - name: List Docker Containers
+      run: |
+        echo "Listing all Docker containers"
+        docker ps -a
 
     - name: Send Email Notification
       if: success() || failure()
