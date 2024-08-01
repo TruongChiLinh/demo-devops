@@ -109,9 +109,9 @@ jobs:
 
       - name: Download and Extract ngrok
         run: |
-          curl -LO https://bin.equinox.io/c/4v4Z6x1PoL8/ngrok-stable-linux-amd64.zip
-          unzip ngrok-stable-linux-amd64.zip
-          sudo mv ngrok /usr/local/bin/ngrok
+          curl -LO https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
+          sudo tar -xvzf ngrok-v3-stable-linux-amd64.tgz -C /usr/local/bin
+          sudo chmod +x /usr/local/bin/ngrok
 
       - name: Set up ngrok
         run: |
