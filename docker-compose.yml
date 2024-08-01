@@ -9,7 +9,7 @@ services:
       replicas: 2
       placement:
         constraints:
-          - node.role == manager
+          - node.role == worker
     networks:
       - fe
       - be
