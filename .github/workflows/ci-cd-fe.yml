@@ -127,7 +127,7 @@ jobs:
       - name: Remove Old Docker Compose 
         run: |
           echo "Removing old Docker Compose stack"
-          docker-compose down || true
+          docker-compose -f deploy/docker-compose.yml down || true
 
       - name: Remove ngrok
         run: |
@@ -137,22 +137,7 @@ jobs:
       - name: Deploy Docker Compose 
         run: |
           echo "Deploying Docker Compose"
-          echo "version: '3.8'
-          services:
-            frontend:
-              image: \"${{ secrets.DOCKER_USERNAME }}/image-fe:latest\"
-              ports:
-                - \"87:80\"
-              networks:
-                - fe
-                - be
-
-          networks:
-            fe:
-              driver: bridge
-            be:
-              external: true" > docker-compose.yml
-          docker-compose up -d
+          docker-compose -f docker-compose.yml up -d
 
       - name: Send Email Notification
         if: success() || failure()
